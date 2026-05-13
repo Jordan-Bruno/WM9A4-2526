@@ -48,7 +48,37 @@ class Note(db.Model):
     # ADDED IN EXERCISE 3: Link every note to its creator's User ID!
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 ```
+3. **Critical Concept: Updating Sample Data Seeding**
+Because `author_id` is now a mandatory, non-nullable column, any dummy/sample notes we create when initializing the database **must** belong to a valid registered user! If we try to create sample notes without specifying an `author_id`, SQLAlchemy will block it and crash with an `IntegrityError`.
 
+To fix this, let's update the database initialisation code at the very bottom of `app.py` to first create a sample admin teacher account, and then link our initial sample notes to that teacher's ID!
+
+Find your `if __name__ == "__main__":` block at the bottom of `app.py` and replace it entirely with this updated code:
+
+```python
+# --- Database Initialization ---
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+        
+        # Seed dummy admin user and notes if empty to make UI look complete immediately
+        if User.query.count() == 0:
+            # Create a secure hash for our default teacher user
+            dummy_hash = generate_password_hash("teacher123")
+            admin_user = User(username="admin_teacher", email="teacher@university.ac.uk", password_hash=dummy_hash)
+            db.session.add(admin_user)
+            db.session.commit() # Commit immediately so the database generates admin_user.id!
+            
+            # Now seed sample notes linked directly to the admin_user's ID
+            sample1 = Note(content="Did you hear? Trinity caught a bug in the tutorial, she is wicked smart!!!", author_id=admin_user.id)
+            sample2 = Note(content="James has been particularly grumpy this morning :(.", author_id=admin_user.id)
+            db.session.add_all([sample1, sample2])
+            db.session.commit()
+            print("Database initialized and sample user/notes seeded!")
+            
+    app.run(debug=True)
+```
 ---
 
 ## Step 3: Implement Flash Alert Rendering in Base Template
