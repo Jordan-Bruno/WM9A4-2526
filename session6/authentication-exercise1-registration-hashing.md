@@ -23,7 +23,7 @@ Let's upgrade our starter application to securely register users using password 
 
 ## Step 1: Open the Starter Files
 
-Open the `starter/` folder inside `Exercise1_Registration_Hashing`. 
+Download the starter files from Moodle and unzip them into a new project folder. 
 Take a look at `app.py`. You will see a simple Flask setup with a `Note` database model and a single homepage route.
 
 Let's install the tool we need for secure password hashing. Open your terminal and make sure your virtual environment is active, then install Flask-SQLAlchemy if you haven't already:
